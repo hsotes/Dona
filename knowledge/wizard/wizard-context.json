@@ -1,0 +1,182 @@
+{
+  "1": {
+    "id": 1,
+    "nombre": "Geometría y Datos",
+    "descripcion": "Dimensiones de la nave y datos del puente grúa",
+    "aiContext": "El usuario está ingresando las dimensiones de una nave industrial con puente grúa.\n\nDATOS QUE SE INGRESAN:\n- Capacidad nominal del puente grúa (toneladas)\n- Luz del puente (distancia entre rieles)\n- Luz libre de la nave\n- Longitud total de la nave\n- Luz de la viga carrilera (separación entre columnas)\n- Altura de la nave\n- Grupo de clasificación (UNE 76-201)\n\nTU ROL EN ESTA ETAPA:\n- Ayudar a interpretar planos si el usuario tiene dudas\n- Recomendar dimensiones según normativas\n- Explicar qué significa el grupo de clasificación\n- Validar que las dimensiones sean coherentes",
+    "aiTasks": [
+      "Validar coherencia de dimensiones ingresadas",
+      "Explicar clasificación de grupos según UNE 76-201",
+      "Recomendar relaciones altura/luz típicas",
+      "Alertar sobre dimensiones fuera de rango usual"
+    ],
+    "aiConstraints": [
+      "No recomendar perfiles todavía - eso es en la etapa 2",
+      "No calcular cargas - eso es en la etapa 3",
+      "Usar unidades del Sistema Internacional"
+    ],
+    "requiredFromPrevious": [],
+    "outputData": [
+      "datosGeometria"
+    ],
+    "normasRelevantes": [
+      "UNE 76-201-88 (Clasificación de grúas)",
+      "CIRSOC 102 (Cargas de servicio)"
+    ]
+  },
+  "2": {
+    "id": 2,
+    "nombre": "Predimensionamiento",
+    "descripcion": "Selección de perfiles estructurales",
+    "aiContext": "El usuario está seleccionando perfiles para la estructura.\n\nDATOS DISPONIBLES:\n- Geometría de la nave (del paso anterior)\n- Base de datos de perfiles (IPN, IPE, UPN, HEB, HEA)\n- Propiedades geométricas e inerciales de cada perfil\n\nTU ROL EN ESTA ETAPA:\n- Recomendar perfiles según las cargas estimadas\n- Explicar criterios de selección (flexión, deflexión, esbeltez)\n- Comparar opciones y justificar elección\n- Calcular propiedades geométricas si se necesitan\n\nPERFILES A SELECCIONAR:\n1. Viga carrilera (recibe cargas del puente grúa)\n2. Columnas principales\n3. Vigas de arriostramiento (opcional)",
+    "aiTasks": [
+      "Calcular momento estimado en viga carrilera",
+      "Recomendar perfil mínimo para viga",
+      "Verificar esbeltez de columnas",
+      "Sugerir arriostramientos si es necesario"
+    ],
+    "aiConstraints": [
+      "Usar perfiles comerciales disponibles en Argentina",
+      "Considerar disponibilidad de perfiles importados",
+      "No sobredimensionar innecesariamente"
+    ],
+    "requiredFromPrevious": [
+      "datosGeometria"
+    ],
+    "outputData": [
+      "perfilesSeleccionados"
+    ],
+    "normasRelevantes": [
+      "CIRSOC 301 (Estructuras de acero)",
+      "AISC 360 (Especificación para acero)"
+    ]
+  },
+  "3": {
+    "id": 3,
+    "nombre": "Cálculo de Pesos",
+    "descripcion": "Peso propio de la estructura",
+    "aiContext": "El usuario necesita calcular el peso de la estructura basado en los perfiles seleccionados.\n\nDATOS DISPONIBLES:\n- Geometría completa de la nave\n- Perfiles seleccionados con sus pesos (kg/m)\n- Longitudes de cada elemento\n\nTU ROL EN ESTA ETAPA:\n- Calcular peso de cada tipo de elemento\n- Sumar peso total de la estructura\n- Calcular peso por metro cuadrado de nave\n- Identificar elementos que más contribuyen al peso\n\nELEMENTOS A CONSIDERAR:\n- Vigas carrileras (2 unidades × longitud nave)\n- Columnas principales\n- Ménsulas de apoyo\n- Arriostramientos\n- Placas de anclaje y conexiones (estimado 10-15%)",
+    "aiTasks": [
+      "Calcular longitud total de vigas carrileras",
+      "Calcular peso de columnas",
+      "Estimar peso de conexiones",
+      "Generar tabla resumen de pesos"
+    ],
+    "aiConstraints": [
+      "Usar pesos reales de perfiles de catálogo",
+      "Incluir factor de conexiones (10-15%)",
+      "Expresar resultados en kN para cargas"
+    ],
+    "requiredFromPrevious": [
+      "datosGeometria",
+      "perfilesSeleccionados"
+    ],
+    "outputData": [
+      "pesosCalculados"
+    ],
+    "normasRelevantes": [
+      "CIRSOC 101 (Cargas permanentes)"
+    ]
+  },
+  "4": {
+    "id": 4,
+    "nombre": "Estados de Carga",
+    "descripcion": "Definición de cargas y combinaciones",
+    "aiContext": "El usuario debe definir los estados de carga y combinaciones.\n\nCARGAS A CONSIDERAR:\n1. CARGA MUERTA (D):\n   - Peso propio estructura (calculado en paso 3)\n   - Peso de cubierta y cerramientos\n\n2. CARGA VIVA DE TECHO (Lr):\n   - Según CIRSOC 101: 0.5-1.0 kN/m²\n\n3. CARGAS DE GRÚA (Cr):\n   - Cargas verticales (con coef. dinámico φ)\n   - Fuerzas horizontales transversales\n   - Fuerzas horizontales longitudinales\n\n4. VIENTO (W):\n   - Presión según zona y altura\n\n5. SISMO (E):\n   - Si aplica según zona sísmica\n\nCOMBINACIONES CIRSOC 101:\n- 1.2D + 1.6L + 1.6Cr\n- 1.2D + 1.6Cr + 0.5L + 0.8W\n- 0.9D + 1.6Cr ± 0.8W\n- etc.",
+    "aiTasks": [
+      "Calcular coeficiente dinámico según grupo",
+      "Calcular cargas de rueda con φ",
+      "Calcular fuerzas de frenado",
+      "Definir combinaciones críticas",
+      "Generar diagrama de cuerpo libre"
+    ],
+    "aiConstraints": [
+      "Usar factores de carga de CIRSOC 101",
+      "Aplicar coeficientes dinámicos de UNE 76-201",
+      "Considerar excentricidad de cargas"
+    ],
+    "requiredFromPrevious": [
+      "datosGeometria",
+      "perfilesSeleccionados",
+      "pesosCalculados"
+    ],
+    "outputData": [
+      "estadosCarga",
+      "combinaciones"
+    ],
+    "normasRelevantes": [
+      "CIRSOC 101 (Combinaciones de carga)",
+      "UNE 76-201 (Coeficientes dinámicos)",
+      "CIRSOC 102 (Acciones sobre estructuras)"
+    ]
+  },
+  "5": {
+    "id": 5,
+    "nombre": "Script SAP2000",
+    "descripcion": "Generación de modelo estructural",
+    "aiContext": "ESTA ES UNA ETAPA DE ACCIÓN AUTOMÁTICA.\n\nCuando el usuario llegue a esta etapa, DEBES generar automáticamente un script Python\npara SAP2000 usando la OAPI (Open Application Programming Interface).\n\nDATOS DISPONIBLES:\n- Geometría completa de la nave\n- Perfiles seleccionados\n- Estados de carga definidos\n- Combinaciones de carga\n\nEL SCRIPT DEBE INCLUIR:\n1. Conexión a SAP2000\n2. Creación de modelo nuevo\n3. Definición de materiales (Acero F24)\n4. Definición de secciones (perfiles seleccionados)\n5. Creación de nodos (coordenadas)\n6. Creación de elementos frame\n7. Asignación de apoyos\n8. Definición de patrones de carga\n9. Aplicación de cargas\n10. Definición de combinaciones\n11. Correr análisis\n12. Exportar resultados",
+    "aiTasks": [
+      "GENERAR script Python completo para SAP2000",
+      "Incluir comentarios explicativos",
+      "Crear funciones modulares",
+      "Agregar manejo de errores"
+    ],
+    "aiConstraints": [
+      "Usar SAP2000 OAPI versión 23+",
+      "Script debe ser ejecutable sin modificaciones",
+      "Incluir verificación de conexión a SAP2000",
+      "Generar archivo descargable .py"
+    ],
+    "requiredFromPrevious": [
+      "datosGeometria",
+      "perfilesSeleccionados",
+      "pesosCalculados",
+      "estadosCarga",
+      "combinaciones"
+    ],
+    "outputData": [
+      "scriptSAP2000"
+    ],
+    "normasRelevantes": [],
+    "autoActions": [
+      {
+        "trigger": "stage_enter",
+        "action": "generate_script",
+        "template": "sap2000_puente_grua"
+      }
+    ]
+  },
+  "6": {
+    "id": 6,
+    "nombre": "Verificación",
+    "descripcion": "Análisis de resultados y ajustes",
+    "aiContext": "El usuario ha corrido el análisis en SAP2000 y necesita verificar resultados.\n\nVERIFICACIONES A REALIZAR:\n1. FLEXIÓN:\n   - Ratio Mu/φMn ≤ 1.0 para todas las vigas\n\n2. CORTE:\n   - Ratio Vu/φVn ≤ 1.0\n\n3. DEFLEXIÓN:\n   - Viga carrilera: L/600 (grúas)\n   - Otras vigas: L/360\n\n4. COMPRESIÓN (columnas):\n   - Verificar pandeo\n   - Ratio Pu/φPn ≤ 1.0\n\n5. CONEXIONES:\n   - Verificar soldaduras\n   - Verificar pernos\n\nSI NO CUMPLE:\n- Identificar elementos que fallan\n- Recomendar perfil mayor\n- Volver al paso 2 para ajustar",
+    "aiTasks": [
+      "Analizar resultados de SAP2000 (CSV)",
+      "Verificar ratios de demanda/capacidad",
+      "Identificar elementos críticos",
+      "Recomendar ajustes si no cumple"
+    ],
+    "aiConstraints": [
+      "Todos los ratios deben ser ≤ 1.0",
+      "Preferir soluciones económicas",
+      "Si hay que cambiar perfil, mantener familia (ej: HEB)"
+    ],
+    "requiredFromPrevious": [
+      "datosGeometria",
+      "perfilesSeleccionados",
+      "pesosCalculados",
+      "estadosCarga",
+      "combinaciones",
+      "scriptSAP2000"
+    ],
+    "outputData": [
+      "verificacionFinal",
+      "reporteResultados"
+    ],
+    "normasRelevantes": [
+      "CIRSOC 301 (Verificaciones)",
+      "AISC 360 (Criterios de diseño)"
+    ]
+  }
+}

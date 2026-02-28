@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "rag-estructuras": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\Hernan Soto\\rag-estructuras-mcp\\dist\\index.js"
+      ]
+    }
+  }
+}

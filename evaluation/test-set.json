@@ -1,0 +1,181 @@
+{
+  "version": 2,
+  "description": "Ground truth test set para evaluar el RAG de ingeniería estructural. v2: incluye McCormac y SP47 como fuentes válidas.",
+  "queries": [
+    {
+      "id": "norma-001",
+      "query": "CIRSOC 301 pandeo lateral torsional",
+      "category": "norma-especifica",
+      "expectedSources": ["reglamento_cirsoc_301.pdf"],
+      "expectedKeywords": ["pandeo", "lateral", "torsional", "CIRSOC 301"]
+    },
+    {
+      "id": "norma-002",
+      "query": "CIRSOC 308 soldadura filete",
+      "category": "norma-especifica",
+      "expectedSources": ["CIRSOC-308-Reglamento.pdf", "CIRSOC-308-Comentarios.pdf", "Cirsoc 308 ejemplo de uso.pdf"],
+      "expectedKeywords": ["soldadura", "filete", "CIRSOC 308"]
+    },
+    {
+      "id": "norma-003",
+      "query": "cargas de viento según CIRSOC 102",
+      "category": "norma-especifica",
+      "expectedSources": ["Proyecto-CIRSOC-102-24-Discusion-Publica-Nacional.pdf"],
+      "expectedKeywords": ["viento", "CIRSOC 102", "carga"]
+    },
+    {
+      "id": "norma-004",
+      "query": "requisitos de soldadura AWS D1.1",
+      "category": "norma-especifica",
+      "expectedSources": ["aws.d1.1.2000.pdf"],
+      "expectedKeywords": ["AWS", "D1.1", "soldadura"]
+    },
+    {
+      "id": "norma-005",
+      "query": "clasificación de secciones compactas CIRSOC 301",
+      "category": "norma-especifica",
+      "expectedSources": ["reglamento_cirsoc_301.pdf"],
+      "expectedKeywords": ["compacta", "sección", "clasificación"]
+    },
+    {
+      "id": "concepto-001",
+      "query": "cómo verificar pandeo lateral en vigas de acero",
+      "category": "concepto-general",
+      "expectedSources": ["reglamento_cirsoc_301.pdf", "AISC_Steel_construction_manual_fourteenth_edi.pdf", "DISENO_DE_ESTRUCTURAS_DE_ACERO_McCORMAC (1).pdf"],
+      "expectedKeywords": ["pandeo", "lateral", "viga", "verificar"]
+    },
+    {
+      "id": "concepto-002",
+      "query": "diseño de placas base para columnas",
+      "category": "concepto-general",
+      "expectedSources": ["AISC Design Guide 01 - Base Plate And Anchor Rod Design 2nd Ed.pdf", "bases de soporte a flexocompresión-compresión y tracción.pdf", "DISENO_DE_ESTRUCTURAS_DE_ACERO_McCORMAC (1).pdf"],
+      "expectedKeywords": ["placa", "base", "columna", "anclaje"]
+    },
+    {
+      "id": "concepto-003",
+      "query": "resistencia a compresión de perfiles de acero conformado en frío",
+      "category": "concepto-general",
+      "expectedSources": ["AISI-S100-16-2020-wS3-22.pdf", "AISI_Acero_Conformado_en_Frio.pdf", "cold formed steel structures to the aisi specification.pdf"],
+      "expectedKeywords": ["conformado", "frío", "compresión"]
+    },
+    {
+      "id": "concepto-004",
+      "query": "conexiones atornilladas resistencia al deslizamiento",
+      "category": "concepto-general",
+      "expectedSources": ["reglamento_cirsoc_301.pdf", "AISC_Steel_construction_manual_fourteenth_edi.pdf", "Curso_Cirsoc_ 301_2008_Uniones_1.pdf", "DISENO_DE_ESTRUCTURAS_DE_ACERO_McCORMAC (1).pdf"],
+      "expectedKeywords": ["atornillada", "deslizamiento", "conexión", "bulón"]
+    },
+    {
+      "id": "concepto-005",
+      "query": "fórmula de momento plástico en sección W",
+      "category": "concepto-general",
+      "expectedSources": ["AISC_Steel_construction_manual_fourteenth_edi.pdf", "reglamento_cirsoc_301.pdf", "DISENO_DE_ESTRUCTURAS_DE_ACERO_McCORMAC (1).pdf", "MANUAL_AHMSA_2013-2.pdf"],
+      "expectedKeywords": ["momento", "plástico", "Zx", "Mp"]
+    },
+    {
+      "id": "concepto-006",
+      "query": "arriostramiento lateral de vigas",
+      "category": "concepto-general",
+      "expectedSources": ["reglamento_cirsoc_301.pdf", "AISC_Steel_construction_manual_fourteenth_edi.pdf", "DISENO_DE_ESTRUCTURAS_DE_ACERO_McCORMAC (1).pdf"],
+      "expectedKeywords": ["arriostramiento", "lateral", "Lb"]
+    },
+    {
+      "id": "calculo-001",
+      "query": "ejemplo de cálculo nave industrial con puente grúa",
+      "category": "calculo",
+      "expectedSources": ["MEMORIA_CALCULO_NAVE_INDUSTRIAL_PUENTE_GRUA.pdf"],
+      "expectedKeywords": ["nave", "industrial", "puente", "grúa"]
+    },
+    {
+      "id": "calculo-002",
+      "query": "ejemplo soldadura filete CIRSOC 308",
+      "category": "calculo",
+      "expectedSources": ["Cirsoc 308 ejemplo de uso.pdf", "CIRSOC-308-Reglamento.pdf"],
+      "expectedKeywords": ["ejemplo", "soldadura", "filete"]
+    },
+    {
+      "id": "calculo-003",
+      "query": "memoria de cálculo galpón minero",
+      "category": "calculo",
+      "expectedSources": ["memoria galpon minero.pdf"],
+      "expectedKeywords": ["galpón", "minero", "memoria"]
+    },
+    {
+      "id": "perfil-001",
+      "query": "propiedades de perfiles HEB según AHMSA",
+      "category": "perfil",
+      "expectedSources": ["MANUAL_AHMSA_2013-2.pdf"],
+      "expectedKeywords": ["HEB", "AHMSA", "perfil", "propiedades"]
+    },
+    {
+      "id": "perfil-002",
+      "query": "tabla de perfiles W AISC",
+      "category": "perfil",
+      "expectedSources": ["AISC_Steel_construction_manual_fourteenth_edi.pdf", "DISENO_DE_ESTRUCTURAS_DE_ACERO_McCORMAC (1).pdf"],
+      "expectedKeywords": ["perfil", "W", "AISC", "tabla"]
+    },
+    {
+      "id": "software-001",
+      "query": "cómo crear modelo en Tekla Structures",
+      "category": "software",
+      "expectedSources": ["TS_MOD_2022_en_Create_models.pdf", "Lesson 02_CreatingSystemComponents_steel.pdf"],
+      "expectedKeywords": ["Tekla", "modelo", "crear"]
+    },
+    {
+      "id": "software-002",
+      "query": "SAP2000 Python API automatización",
+      "category": "software",
+      "expectedSources": ["MANUAL_SAP2000_PYTHON.md"],
+      "expectedKeywords": ["SAP2000", "Python", "API"]
+    },
+    {
+      "id": "software-003",
+      "query": "componentes personalizados en Tekla",
+      "category": "software",
+      "expectedSources": ["Lesson 04_CustomComponents_steel.pdf"],
+      "expectedKeywords": ["componente", "custom", "Tekla"]
+    },
+    {
+      "id": "especifica-001",
+      "query": "ASTM A370 ensayo de tracción",
+      "category": "norma-especifica",
+      "expectedSources": ["a370-21w.pdf"],
+      "expectedKeywords": ["ASTM", "A370", "tracción", "ensayo"]
+    },
+    {
+      "id": "especifica-002",
+      "query": "ASTM A360 acero estructural",
+      "category": "norma-especifica",
+      "expectedSources": ["a360-22w.pdf"],
+      "expectedKeywords": ["ASTM", "A360", "acero"]
+    },
+    {
+      "id": "especifica-003",
+      "query": "Tekla Structural Designer handbook verificación vigas",
+      "category": "software",
+      "expectedSources": ["tekla-structural-designer-2024-engineers-handbooks.pdf"],
+      "expectedKeywords": ["Tekla", "Designer", "handbook", "viga"]
+    },
+    {
+      "id": "fuera-001",
+      "query": "receta de empanadas argentinas",
+      "category": "fuera-de-dominio",
+      "expectedSources": [],
+      "expectedKeywords": []
+    },
+    {
+      "id": "fuera-002",
+      "query": "programación en JavaScript React hooks",
+      "category": "fuera-de-dominio",
+      "expectedSources": [],
+      "expectedKeywords": []
+    },
+    {
+      "id": "mixta-001",
+      "query": "factor de longitud efectiva K para columnas arriostradas",
+      "category": "concepto-general",
+      "expectedSources": ["reglamento_cirsoc_301.pdf", "AISC_Steel_construction_manual_fourteenth_edi.pdf", "DISENO_DE_ESTRUCTURAS_DE_ACERO_McCORMAC (1).pdf"],
+      "expectedKeywords": ["longitud", "efectiva", "K", "columna"]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+==================================================
+  RECARGAR SERVIDOR MCP - INSTRUCCIONES
+==================================================
+
+El PDF se agregó correctamente pero necesitas recargar
+VSCode para que Claude Code detecte el cambio.
+
+MÉTODO 1: Recargar Ventana (RECOMENDADO)
+-----------------------------------------
+1. Presiona: Ctrl + Shift + P
+2. Escribe: "Reload Window"
+3. Presiona Enter
+4. Espera a que VSCode se recargue
+
+MÉTODO 2: Cerrar y Abrir VSCode
+---------------------------------
+1. Cierra VSCode completamente
+2. Abre VSCode de nuevo
+3. El servidor se recargará automáticamente
+
+VERIFICAR QUE FUNCIONÓ:
+-----------------------
+Después de recargar, en Claude Code escribe:
+
+List available resources
+
+Deberías ver el nuevo PDF:
+- PLIEG 2025 26787713 GDEBA DPTYLLOPISU
+
+URI: pdf://plieg-2025-26787713-gdeba-dptyllopisu
+
+==================================================

@@ -1,0 +1,113 @@
+================================================================================
+       RAG ESTRUCTURAS - INSTRUCCIONES COMPLETAS
+================================================================================
+
+REQUISITO: Abrir una terminal (cmd o PowerShell) en la carpeta:
+           C:\Users\Hernan Soto\rag-estructuras-mcp
+
+
+================================================================================
+PARTE 1: CONFIGURACION INICIAL (solo la primera vez)
+================================================================================
+
+1. Configurar la API Key de OpenAI (necesaria para busqueda semantica):
+
+   En PowerShell:
+   $env:OPENAI_API_KEY="sk-tu-api-key-aqui"
+
+   En CMD:
+   set OPENAI_API_KEY=sk-tu-api-key-aqui
+
+   NOTA: Esta configuracion se pierde al cerrar la terminal.
+         Para hacerla permanente, agregar a las variables de entorno de Windows.
+
+
+================================================================================
+PARTE 2: CARGAR ARCHIVOS AL RAG
+================================================================================
+
+1. CARGAR UN MANUAL (.md o .txt):
+   npm run cargar:manual -- "RUTA_DEL_ARCHIVO"
+
+2. CARGAR UN PDF:
+   npm run cargar:pdf -- "RUTA_DEL_ARCHIVO"
+
+3. CARGAR PERFILES ESTRUCTURALES (.json):
+   npm run cargar:perfiles -- "RUTA_DEL_ARCHIVO"
+
+4. CARGAR LISTA DE COSTOS (.csv o .json):
+   npm run cargar:costos -- "RUTA_DEL_ARCHIVO"
+
+5. CARGAR NORMA TECNICA (.json):
+   npm run cargar:norma -- "RUTA_DEL_ARCHIVO"
+
+
+================================================================================
+PARTE 3: INDEXAR DOCUMENTOS (Vectorizacion)
+================================================================================
+
+Despues de cargar archivos, hay que INDEXARLOS para habilitar la busqueda
+semantica. La indexacion extrae el texto y lo convierte en vectores.
+
+COMANDOS DE INDEXACION:
+
+  npm run indexar           Indexa PDFs y manuales del RAG
+  npm run indexar:pdfs      Solo PDFs de knowledge/normas/pdfs/
+  npm run indexar:manuales  Solo manuales de knowledge/manuales/
+  npm run indexar:biblio    Indexa la biblioteca externa (Segui, McCormac, etc.)
+  npm run indexar:todo      Indexa TODO (RAG + bibliografia)
+  npm run indexar:stats     Ver estadisticas del vector store
+
+
+INDEXAR UN ARCHIVO ESPECIFICO:
+  npm run indexar -- --archivo "C:\ruta\al\archivo.pdf"
+
+
+RE-INDEXAR (borrar y volver a indexar):
+  npm run indexar -- --reindex
+
+
+EJEMPLO COMPLETO:
+  1. Cargar un PDF:     npm run cargar:pdf -- "C:\docs\mi-norma.pdf"
+  2. Indexarlo:         npm run indexar:pdfs
+  3. Listo! Ya puedes buscar en ese documento desde Claude.
+
+
+================================================================================
+PARTE 4: DONDE SE GUARDAN LOS ARCHIVOS
+================================================================================
+
+  Manuales      ->  knowledge/manuales/
+  PDFs          ->  knowledge/normas/pdfs/
+  Perfiles      ->  knowledge/perfiles/perfiles.json
+  Costos        ->  knowledge/costos/materiales-hierro.csv
+  Normas        ->  knowledge/normas/contextos.json
+  Vectores      ->  knowledge/vectordb/  (base de datos vectorial)
+
+
+================================================================================
+PARTE 5: COMO USAR LA BUSQUEDA SEMANTICA
+================================================================================
+
+Una vez indexados los documentos, desde Claude puedes hacer preguntas como:
+
+  - "Como calcular el pandeo lateral torsional segun CIRSOC?"
+  - "Que dice Segui sobre conexiones soldadas?"
+  - "Cual es el coeficiente Cb para momento uniforme?"
+
+Claude usara automaticamente la herramienta buscar_documentos para encontrar
+los fragmentos mas relevantes en tu biblioteca.
+
+
+================================================================================
+CONSEJOS
+================================================================================
+
+- Usa comillas si la ruta tiene espacios
+- Puedes arrastrar el archivo a la terminal para obtener la ruta
+- Click derecho en archivo > "Copiar como ruta de acceso" en Windows
+- La indexacion puede tardar varios minutos para archivos grandes
+- Los PDFs de mas de 1000 paginas pueden demorar 5-10 minutos
+
+
+================================================================================

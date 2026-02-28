@@ -1,0 +1,155 @@
+{
+  "version": 3,
+  "sources": [
+    {
+      "name": "Lesson 02_CreatingSystemComponents_steel.pdf",
+      "chunks": 27,
+      "indexedAt": "2026-02-27T16:15:39.815Z"
+    },
+    {
+      "name": "Lesson 04_CustomComponents_steel.pdf",
+      "chunks": 24,
+      "indexedAt": "2026-02-27T16:15:39.833Z"
+    },
+    {
+      "name": "tekla-structural-designer-2024-engineers-handbooks.pdf",
+      "chunks": 1293,
+      "indexedAt": "2026-02-27T16:15:43.525Z"
+    },
+    {
+      "name": "TS_MOD_2022_en_Create_models.pdf",
+      "chunks": 1675,
+      "indexedAt": "2026-02-27T16:15:45.822Z"
+    },
+    {
+      "name": "TS_MGE_2018_en_Manage_Tekla_Structures.pdf",
+      "chunks": 671,
+      "indexedAt": "2026-02-27T16:15:46.339Z"
+    },
+    {
+      "name": "memoria galpon minero.pdf",
+      "chunks": 16,
+      "indexedAt": "2026-02-27T16:26:04.876Z"
+    },
+    {
+      "name": "a313-21w.pdf",
+      "chunks": 496,
+      "indexedAt": "2026-02-28T00:07:56.728Z"
+    },
+    {
+      "name": "a370-21w.pdf",
+      "chunks": 2439,
+      "indexedAt": "2026-02-28T00:09:36.371Z"
+    },
+    {
+      "name": "aws.d1.1.2000.pdf",
+      "chunks": 3121,
+      "indexedAt": "2026-02-28T00:10:13.114Z"
+    },
+    {
+      "name": "bases de soporte a flexocompresión-compresión y tracción.pdf",
+      "chunks": 45,
+      "indexedAt": "2026-02-28T00:10:14.379Z"
+    },
+    {
+      "name": "CIRSOC-308-Reglamento.pdf",
+      "chunks": 466,
+      "indexedAt": "2026-02-28T00:10:22.159Z"
+    },
+    {
+      "name": "MANUAL_AHMSA_2013-2.pdf",
+      "chunks": 1844,
+      "indexedAt": "2026-02-28T00:10:47.614Z"
+    },
+    {
+      "name": "MEMORIA_CALCULO_NAVE_INDUSTRIAL_PUENTE_GRUA.pdf",
+      "chunks": 33,
+      "indexedAt": "2026-02-28T00:10:48.801Z"
+    },
+    {
+      "name": "PLIEG-2025-26787713-GDEBA-DPTYLLOPISU.pdf",
+      "chunks": 77,
+      "indexedAt": "2026-02-28T00:10:50.558Z"
+    },
+    {
+      "name": "Proyecto-CIRSOC-102-24-Discusion-Publica-Nacional.pdf",
+      "chunks": 1621,
+      "indexedAt": "2026-02-28T00:11:14.044Z"
+    },
+    {
+      "name": "ReglamentoCirsoc_102_1_82.pdf",
+      "chunks": 94,
+      "indexedAt": "2026-02-28T00:11:15.365Z"
+    },
+    {
+      "name": "reglamento_cirsoc_301.pdf",
+      "chunks": 1308,
+      "indexedAt": "2026-02-28T00:11:31.328Z"
+    },
+    {
+      "name": "tesis.pdf",
+      "chunks": 991,
+      "indexedAt": "2026-02-28T00:11:48.888Z"
+    },
+    {
+      "name": "AISC Design Guide 01 - Base Plate And Anchor Rod Design 2nd Ed.pdf",
+      "chunks": 496,
+      "indexedAt": "2026-02-28T00:11:54.112Z"
+    },
+    {
+      "name": "Cirsoc 308 ejemplo de uso.pdf",
+      "chunks": 145,
+      "indexedAt": "2026-02-28T00:11:56.268Z"
+    },
+    {
+      "name": "CIRSOC-308-Comentarios.pdf",
+      "chunks": 250,
+      "indexedAt": "2026-02-28T00:11:59.325Z"
+    },
+    {
+      "name": "Curso_Cirsoc_ 301_2008_Uniones_1.pdf",
+      "chunks": 25,
+      "indexedAt": "2026-02-28T00:11:59.835Z"
+    },
+    {
+      "name": "MANUAL_SAP2000_PYTHON.md",
+      "chunks": 71,
+      "indexedAt": "2026-02-28T00:12:00.575Z"
+    },
+    {
+      "name": "SP47_1988_Lattice_Portal_Frames.pdf",
+      "chunks": 531,
+      "indexedAt": "2026-02-28T00:12:08.071Z"
+    },
+    {
+      "name": "a360-22w.pdf",
+      "chunks": 4989,
+      "indexedAt": "2026-02-28T00:13:09.840Z"
+    },
+    {
+      "name": "AISC_Steel_construction_manual_fourteenth_edi.pdf",
+      "chunks": 11359,
+      "indexedAt": "2026-02-28T00:15:35.722Z"
+    },
+    {
+      "name": "AISI-S100-16-2020-wS3-22.pdf",
+      "chunks": 3231,
+      "indexedAt": "2026-02-28T00:16:19.465Z"
+    },
+    {
+      "name": "AISI_Acero_Conformado_en_Frio.pdf",
+      "chunks": 618,
+      "indexedAt": "2026-02-28T00:16:26.896Z"
+    },
+    {
+      "name": "cold formed steel structures to the aisi specification.pdf",
+      "chunks": 216,
+      "indexedAt": "2026-02-28T00:16:30.196Z"
+    },
+    {
+      "name": "DISENO_DE_ESTRUCTURAS_DE_ACERO_McCORMAC (1).pdf",
+      "chunks": 3775,
+      "indexedAt": "2026-02-28T00:17:15.648Z"
+    }
+  ]
+}

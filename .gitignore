@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large PDF files (keep metadata only)
+knowledge/normas/pdfs/*.pdf
+
+# Large vector/embedding files (regenerate with: npm run indexar)
+knowledge/vectordb/vectors/
+knowledge/vectordb/bm25-index.json
+knowledge/vectordb/vectors.json.migrated
+knowledge/vectordb/chunks/
+
+# Example PDFs
+knowledge/Ejemplos/*.pdf
+
+# Claude temp files
+tmpclaude-*
+
+# Large manual PDFs
+knowledge/manuales/*.pdf
+
+# Temporary files
+*.tmp
+nul
+knowledge/tmpclaude-*
+
+# Vercel
+.vercel/
+
+# Logs directory
+logs/
