@@ -90,6 +90,11 @@ async function parseCostosCSV(filePath: string): Promise<MaterialCosto[]> {
 }
 
 async function loadPDFMetadata(dir: string) {
+  try {
+    await fs.access(dir);
+  } catch {
+    return [];
+  }
   const files = await fs.readdir(dir);
 
   return files
