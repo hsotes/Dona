@@ -2,14 +2,17 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Copiar dependencias primero (cache de Docker)
+# Instalar TODAS las dependencias (incluyendo dev para compilar)
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 
-# Copiar código fuente y compilar
+# Compilar TypeScript
 COPY tsconfig.json ./
 COPY src/ ./src/
 RUN npx tsc
+
+# Eliminar devDependencies después de compilar
+RUN npm prune --omit=dev
 
 # Copiar frontend y datos
 COPY public/ ./public/
