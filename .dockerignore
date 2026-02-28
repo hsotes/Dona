@@ -8,3 +8,7 @@ logs
 nul
 tmpclaude-*
 api/
+knowledge/vectordb/vectors.json.migrated
+knowledge/manuales/*.pdf
+knowledge/normas/pdfs/*.pdf
+knowledge/Ejemplos/*.pdf

@@ -22,23 +22,16 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
-# Large PDF files (keep metadata only)
+# Large PDF files
 knowledge/normas/pdfs/*.pdf
-
-# Large vector/embedding files (regenerate with: npm run indexar)
-knowledge/vectordb/vectors/
-knowledge/vectordb/bm25-index.json
-knowledge/vectordb/vectors.json.migrated
-knowledge/vectordb/chunks/
-
-# Example PDFs
+knowledge/manuales/*.pdf
 knowledge/Ejemplos/*.pdf
+
+# Migration artifact
+knowledge/vectordb/vectors.json.migrated
 
 # Claude temp files
 tmpclaude-*
-
-# Large manual PDFs
-knowledge/manuales/*.pdf
 
 # Temporary files
 *.tmp
@@ -50,3 +43,10 @@ knowledge/tmpclaude-*
 
 # Logs directory
 logs/
+
+# Original large files (>100MB) - replaced by split parts in vectors/parts/
+knowledge/vectordb/vectors/AISC_Steel_construction_manual_fourteenth_edi.pdf.vec.json
+knowledge/vectordb/vectors/a360-22w.pdf.vec.json
+knowledge/vectordb/vectors/DISENO_DE_ESTRUCTURAS_DE_ACERO_McCORMAC__1_.pdf.vec.json
+knowledge/vectordb/vectors/AISI-S100-16-2020-wS3-22.pdf.vec.json
+knowledge/vectordb/bm25-index.json
