@@ -9,7 +9,11 @@ import { sugerirPerfilesTool } from '../tools/sugerir-perfiles.js';
 import { consultarCostosTool } from '../tools/consultar-costos.js';
 import { buscarDocumentosTool, estadisticasVectorStoreTool } from '../tools/buscar-documentos.js';
 
-const openai = new OpenAI();
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI();
+  return _openai;
+}
 
 const SYSTEM_PROMPT = `Sos "Dona", un asistente experto en ingeniería estructural metálica argentina.
 Tenés acceso a una base de conocimiento (RAG) que incluye:
@@ -127,7 +131,7 @@ export async function processChat(userMessage: string, history: ChatMessage[]) {
   messages.push({ role: 'user', content: userMessage });
 
   // Primera llamada: OpenAI decide qué herramientas usar
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages,
     tools,
@@ -174,7 +178,7 @@ export async function processChat(userMessage: string, history: ChatMessage[]) {
     }
 
     // Segunda llamada: OpenAI genera respuesta con los datos
-    const finalResponse = await openai.chat.completions.create({
+    const finalResponse = await getOpenAI().chat.completions.create({
       model: 'gpt-4o-mini',
       messages,
       temperature: 0.3,
