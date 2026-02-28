@@ -18,10 +18,8 @@ import { generateEmbedding, generateEmbeddings } from './embeddings.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Rutas: si existe volume persistente, usarlo; sino, usar local
-const VOLUME_DIR = '/data/vectordb';
-const LOCAL_DIR = path.join(__dirname, '..', '..', 'knowledge', 'vectordb');
-const STORE_DIR = fs.existsSync(path.join(VOLUME_DIR, 'manifest.json')) ? VOLUME_DIR : LOCAL_DIR;
+// Rutas
+const STORE_DIR = path.join(__dirname, '..', '..', 'knowledge', 'vectordb');
 const VECTORS_DIR = path.join(STORE_DIR, 'vectors');
 const CHUNKS_DIR = path.join(STORE_DIR, 'chunks');
 const MANIFEST_PATH = path.join(STORE_DIR, 'manifest.json');

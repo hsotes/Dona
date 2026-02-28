@@ -14,9 +14,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const VOLUME_DIR = '/data/vectordb';
-const LOCAL_DIR = path.join(__dirname, '..', '..', 'knowledge', 'vectordb');
-const STORE_DIR = fs.existsSync(path.join(VOLUME_DIR, 'manifest.json')) ? VOLUME_DIR : LOCAL_DIR;
+const STORE_DIR = path.join(__dirname, '..', '..', 'knowledge', 'vectordb');
 const BM25_INDEX_PATH = path.join(STORE_DIR, 'bm25-index.json');
 
 // Parámetros BM25
