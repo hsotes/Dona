@@ -31,6 +31,7 @@ if (fs.existsSync(envPath)) {
 }
 
 import { hybridSearch, type SearchMethod } from '../src/vectordb/hybrid-search.js';
+import { multiStepSearch } from '../src/vectordb/multistep-search.js';
 import { evaluateQuery, aggregateMetrics, type EvalResult } from '../src/evaluation/metrics.js';
 
 interface TestQuery {
@@ -48,7 +49,7 @@ interface TestSet {
 
 interface EvalConfig {
   name: string;
-  method: SearchMethod;
+  method: SearchMethod | 'multistep';
   rewrite: boolean;
   rerank: boolean;
 }
@@ -58,13 +59,26 @@ async function runEvaluation(config: EvalConfig, queries: TestQuery[]): Promise<
 
   for (const q of queries) {
     try {
-      const { results: searchResults } = await hybridSearch({
-        query: q.query,
-        limit: 5,
-        method: config.method,
-        rewrite: config.rewrite,
-        rerank: config.rerank,
-      });
+      let searchResults;
+
+      if (config.method === 'multistep') {
+        const ms = await multiStepSearch({
+          query: q.query,
+          limit: 5,
+          rewrite: config.rewrite,
+          rerank: config.rerank,
+        });
+        searchResults = ms.results;
+      } else {
+        const hs = await hybridSearch({
+          query: q.query,
+          limit: 5,
+          method: config.method,
+          rewrite: config.rewrite,
+          rerank: config.rerank,
+        });
+        searchResults = hs.results;
+      }
 
       // Extraer sources únicos de resultados
       const retrievedSources = [...new Set(searchResults.map(r => r.metadata.source))];
@@ -145,6 +159,11 @@ async function main() {
       { name: 'Hybrid (RRF)', method: 'hybrid', rewrite: false, rerank: false },
       { name: 'Hybrid + Rewrite', method: 'hybrid', rewrite: true, rerank: false },
       { name: 'Hybrid + Rewrite + Rerank', method: 'hybrid', rewrite: true, rerank: true },
+      { name: 'MultiStep + Rewrite', method: 'multistep', rewrite: true, rerank: false },
+    );
+  } else if (args.includes('--multistep')) {
+    configs.push(
+      { name: 'MultiStep + Rewrite', method: 'multistep', rewrite: true, rerank: false },
     );
   } else {
     const method = (args.find(a => a === '--method') ? args[args.indexOf('--method') + 1] : 'hybrid') as SearchMethod;

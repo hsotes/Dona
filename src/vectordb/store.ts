@@ -404,28 +404,20 @@ export async function searchDocuments(
 }
 
 /**
- * Busca documentos similares a una query, retornando timings
+ * Busca documentos usando un embedding pre-computado (sin llamar a la API).
+ * Útil para multi-step search donde se reutiliza el mismo embedding.
  */
-export async function searchDocumentsWithTimings(
-  query: string,
+export function searchWithEmbedding(
+  queryEmbedding: number[],
   limit: number = 5,
   filter?: Record<string, string>
-): Promise<SearchResultWithTimings> {
-  const totalStart = performance.now();
+): { results: SearchResult[]; searchMs: number } {
   const m = loadManifest();
 
   if (m.sources.length === 0) {
-    console.log('[VectorStore] No hay documentos indexados');
-    return { results: [], timings: { embeddingMs: 0, searchMs: 0, totalMs: 0 } };
+    return { results: [], searchMs: 0 };
   }
 
-  // Generar embedding de la query
-  console.log('[VectorStore] Generando embedding para búsqueda...');
-  const embStart = performance.now();
-  const queryEmbedding = await generateEmbedding(query);
-  const embeddingMs = performance.now() - embStart;
-
-  // Buscar en todos los documentos
   const searchStart = performance.now();
   const allScores: { doc: IndexedDocument; similarity: number }[] = [];
 
@@ -433,7 +425,6 @@ export async function searchDocumentsWithTimings(
     const documents = loadDocumentVectors(sourceInfo.name);
 
     for (const doc of documents) {
-      // Aplicar filtro
       if (filter) {
         let matches = true;
         for (const [key, value] of Object.entries(filter)) {
@@ -452,11 +443,9 @@ export async function searchDocumentsWithTimings(
     }
   }
 
-  // Ordenar por similitud
   allScores.sort((a, b) => b.similarity - a.similarity);
-  const searchMs = performance.now() - searchStart;
+  const searchMs = Math.round(performance.now() - searchStart);
 
-  // Tomar los top N y cargar contenido
   const results: SearchResult[] = allScores.slice(0, limit).map(item => ({
     id: item.doc.id,
     content: getChunkContent(item.doc.metadata.source, item.doc.metadata.chunkIndex),
@@ -464,15 +453,36 @@ export async function searchDocumentsWithTimings(
     distance: 1 - item.similarity,
   }));
 
-  const totalMs = performance.now() - totalStart;
+  return { results, searchMs };
+}
+
+/**
+ * Busca documentos similares a una query, retornando timings
+ */
+export async function searchDocumentsWithTimings(
+  query: string,
+  limit: number = 5,
+  filter?: Record<string, string>
+): Promise<SearchResultWithTimings> {
+  const totalStart = performance.now();
+  const m = loadManifest();
+
+  if (m.sources.length === 0) {
+    console.log('[VectorStore] No hay documentos indexados');
+    return { results: [], timings: { embeddingMs: 0, searchMs: 0, totalMs: 0 } };
+  }
+
+  console.log('[VectorStore] Generando embedding para búsqueda...');
+  const embStart = performance.now();
+  const queryEmbedding = await generateEmbedding(query);
+  const embeddingMs = Math.round(performance.now() - embStart);
+
+  const { results, searchMs } = searchWithEmbedding(queryEmbedding, limit, filter);
+  const totalMs = Math.round(performance.now() - totalStart);
 
   return {
     results,
-    timings: {
-      embeddingMs: Math.round(embeddingMs),
-      searchMs: Math.round(searchMs),
-      totalMs: Math.round(totalMs),
-    },
+    timings: { embeddingMs, searchMs, totalMs },
   };
 }
 

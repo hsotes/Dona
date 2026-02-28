@@ -36,7 +36,7 @@ export interface QueryLog {
   timestamp: string;
   originalQuery: string;
   rewrittenQuery?: string;
-  searchMethod: 'semantic' | 'bm25' | 'hybrid';
+  searchMethod: string;
   filter?: Record<string, string>;
   topK: number;
   resultsCount: number;

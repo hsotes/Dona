@@ -19,6 +19,7 @@ export {
   addDocuments,
   searchDocuments,
   searchDocumentsWithTimings,
+  searchWithEmbedding,
   getChunkContent,
   isDocumentIndexed,
   deleteDocumentsBySource,
@@ -59,6 +60,14 @@ export {
 export { rewriteQuery } from './query-rewriter.js';
 
 export { rerankResults } from './reranker.js';
+
+export {
+  multiStepSearch,
+  detectCollection,
+  enforceSourceDiversity,
+  type MultiStepOptions,
+  type MultiStepResult,
+} from './multistep-search.js';
 
 export {
   enrichMetadata,

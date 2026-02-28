@@ -7,6 +7,7 @@
 
 import { getStoreStats, type SearchResult } from '../vectordb/index.js';
 import { hybridSearch, type SearchMethod } from '../vectordb/hybrid-search.js';
+import { multiStepSearch } from '../vectordb/multistep-search.js';
 import { logQuery, createQueryId } from '../utils/logger.js';
 
 export const buscarDocumentosSchema = {
@@ -72,15 +73,41 @@ export async function buscarDocumentosTool(args: BuscarDocumentosArgs) {
 
     const queryId = createQueryId();
 
-    // Búsqueda híbrida con rewriting (rerank desactivado: empeora recall en eval)
-    const { results, timings, method, rewrittenQuery } = await hybridSearch({
-      query: consulta,
-      limit: limite,
-      filter: filterOrUndefined,
-      method: 'hybrid',
-      rewrite: true,
-      rerank: false,
-    });
+    // Si el usuario no filtró por colección, usar multi-step (detección automática + diversidad)
+    // Si filtró explícitamente, usar hybrid directo (ya está focalizado)
+    const useMultiStep = coleccion === 'todos';
+
+    let results: SearchResult[];
+    let timings: { embeddingMs: number; bm25Ms: number; searchMs: number; fusionMs?: number; rewriteMs: number; rerankMs: number; totalMs: number };
+    let method: string;
+    let rewrittenQuery: string | undefined;
+
+    if (useMultiStep) {
+      const ms = await multiStepSearch({
+        query: consulta,
+        limit: limite,
+        filter: filterOrUndefined,
+        rewrite: true,
+        rerank: false,
+      });
+      results = ms.results;
+      timings = ms.timings;
+      method = ms.detectedCollection ? `multistep(${ms.detectedCollection})` : 'multistep';
+      rewrittenQuery = ms.rewrittenQuery;
+    } else {
+      const hs = await hybridSearch({
+        query: consulta,
+        limit: limite,
+        filter: filterOrUndefined,
+        method: 'hybrid',
+        rewrite: true,
+        rerank: false,
+      });
+      results = hs.results;
+      timings = hs.timings;
+      method = hs.method;
+      rewrittenQuery = hs.rewrittenQuery;
+    }
 
     // Formatear resultados para el LLM con nivel de confianza
     const fragmentos = results.map((r, idx) => {

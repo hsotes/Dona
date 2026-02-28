@@ -5,7 +5,8 @@
  * Fallback automático a semántico si no hay índice BM25.
  */
 
-import { searchDocumentsWithTimings, getChunkContent, type SearchResult, type SearchTimings } from './store.js';
+import { searchDocumentsWithTimings, searchWithEmbedding, getChunkContent, type SearchResult, type SearchTimings } from './store.js';
+import { generateEmbedding } from './embeddings.js';
 import { searchBM25, bm25IndexExists, type BM25Result } from './bm25.js';
 import { rewriteQuery } from './query-rewriter.js';
 import { rerankResults } from './reranker.js';
@@ -25,6 +26,8 @@ export interface HybridSearchOptions {
   rrfK?: number;
   rewrite?: boolean;
   rerank?: boolean;
+  /** Embedding pre-computado para reutilizar (evita llamada extra a API) */
+  precomputedEmbedding?: number[];
 }
 
 export interface HybridTimings {
@@ -78,6 +81,7 @@ export async function hybridSearch(options: HybridSearchOptions): Promise<Hybrid
     rrfK = DEFAULT_RRF_K,
     rewrite = false,
     rerank = false,
+    precomputedEmbedding,
   } = options;
 
   const totalStart = performance.now();
@@ -136,7 +140,21 @@ export async function hybridSearch(options: HybridSearchOptions): Promise<Hybrid
   // Solo semántico
   if (method === 'semantic' || !bm25IndexExists()) {
     const fetchLimit = rerank ? rerankOverfetch : limit;
-    const { results: semResults, timings } = await searchDocumentsWithTimings(searchQuery, fetchLimit, filter);
+
+    let semResults: SearchResult[];
+    let embeddingMs = 0;
+    let searchMs = 0;
+
+    if (precomputedEmbedding) {
+      const sr = searchWithEmbedding(precomputedEmbedding, fetchLimit, filter);
+      semResults = sr.results;
+      searchMs = sr.searchMs;
+    } else {
+      const sr = await searchDocumentsWithTimings(searchQuery, fetchLimit, filter);
+      semResults = sr.results;
+      embeddingMs = sr.timings.embeddingMs;
+      searchMs = sr.timings.searchMs;
+    }
 
     let results = semResults;
     if (rerank && results.length > limit) {
@@ -150,8 +168,8 @@ export async function hybridSearch(options: HybridSearchOptions): Promise<Hybrid
     return {
       results,
       timings: {
-        embeddingMs: timings.embeddingMs, bm25Ms: 0,
-        searchMs: timings.searchMs, fusionMs: 0,
+        embeddingMs, bm25Ms: 0,
+        searchMs, fusionMs: 0,
         rewriteMs, rerankMs,
         totalMs: Math.round(performance.now() - totalStart),
       },
@@ -170,8 +188,20 @@ export async function hybridSearch(options: HybridSearchOptions): Promise<Hybrid
   const bm25Results = searchBM25(searchQuery, overfetchLimit, filter);
   const bm25Ms = Math.round(performance.now() - bm25Start);
 
-  const { results: semanticResults, timings: semTimings } =
-    await searchDocumentsWithTimings(searchQuery, overfetchLimit, filter);
+  let semanticResults: SearchResult[];
+  let semEmbeddingMs = 0;
+  let semSearchMs = 0;
+
+  if (precomputedEmbedding) {
+    const sr = searchWithEmbedding(precomputedEmbedding, overfetchLimit, filter);
+    semanticResults = sr.results;
+    semSearchMs = sr.searchMs;
+  } else {
+    const sr = await searchDocumentsWithTimings(searchQuery, overfetchLimit, filter);
+    semanticResults = sr.results;
+    semEmbeddingMs = sr.timings.embeddingMs;
+    semSearchMs = sr.timings.searchMs;
+  }
 
   // RRF Fusion
   const fusionStart = performance.now();
@@ -236,9 +266,9 @@ export async function hybridSearch(options: HybridSearchOptions): Promise<Hybrid
   return {
     results: finalResults,
     timings: {
-      embeddingMs: semTimings.embeddingMs,
+      embeddingMs: semEmbeddingMs,
       bm25Ms,
-      searchMs: semTimings.searchMs,
+      searchMs: semSearchMs,
       fusionMs,
       rewriteMs,
       rerankMs,

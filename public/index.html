@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#0f0f1a">
-  <meta name="description" content="Dona - Consulta de perfiles estructurales, costos y documentos tecnicos">
+  <meta name="description" content="Dona - Asistente de ingenieria estructural metalica">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Dona">
@@ -18,528 +19,198 @@
   <!-- Header -->
   <header class="header">
     <div class="header-logo">Dona</div>
-    <span class="header-title">Dona</span>
-    <span class="header-subtitle">Consulta Estructural</span>
+    <div class="header-text">
+      <span class="header-title">Dona</span>
+      <span class="header-subtitle">Asistente Estructural</span>
+    </div>
+    <button class="header-btn" onclick="clearChat()" title="Nueva conversacion">+</button>
   </header>
 
-  <!-- Tabs -->
-  <nav class="tabs">
-    <button class="tab active" data-tab="perfiles">Perfiles</button>
-    <button class="tab" data-tab="sugerir">Sugerir</button>
-    <button class="tab" data-tab="costos">Costos</button>
-    <button class="tab" data-tab="documentos">Documentos</button>
-  </nav>
-
-  <main class="container">
-    <!-- ========== TAB: PERFILES ========== -->
-    <section class="panel active" id="panel-perfiles">
-      <div class="form-section">
-        <div class="form-title">Buscar perfiles estructurales</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="pf-tipo">Tipo</label>
-            <select id="pf-tipo">
-              <option value="">Todos</option>
-              <option value="IPN">IPN</option>
-              <option value="IPE">IPE</option>
-              <option value="UPN">UPN</option>
-              <option value="HEB">HEB</option>
-              <option value="HEA">HEA</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="pf-ordenar">Ordenar por</label>
-            <select id="pf-ordenar">
-              <option value="">Sin orden</option>
-              <option value="peso">Peso</option>
-              <option value="Wx">Wx</option>
-              <option value="Ix">Ix</option>
-              <option value="h">Altura</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="pf-minWx">Wx min (cm3)</label>
-            <input type="number" id="pf-minWx" placeholder="ej: 100">
-          </div>
-          <div class="form-group">
-            <label for="pf-minIx">Ix min (cm4)</label>
-            <input type="number" id="pf-minIx" placeholder="ej: 2000">
-          </div>
-          <div class="form-group">
-            <label for="pf-maxPeso">Peso max (kg/m)</label>
-            <input type="number" id="pf-maxPeso" placeholder="ej: 50">
-          </div>
-          <div class="form-group">
-            <label for="pf-limite">Resultados max</label>
-            <input type="number" id="pf-limite" placeholder="10" value="10">
-          </div>
-          <div class="form-group">
-            <label for="pf-minAltura">Altura min (mm)</label>
-            <input type="number" id="pf-minAltura" placeholder="ej: 200">
-          </div>
-          <div class="form-group">
-            <label for="pf-maxAltura">Altura max (mm)</label>
-            <input type="number" id="pf-maxAltura" placeholder="ej: 400">
-          </div>
-        </div>
-        <button class="btn-search" onclick="buscarPerfiles()">Buscar perfiles</button>
+  <!-- Chat messages -->
+  <main class="chat-container" id="chatContainer">
+    <div class="welcome">
+      <div class="welcome-icon">Dona</div>
+      <h2>Hola, soy Dona</h2>
+      <p>Tu asistente de ingenieria estructural metalica. Preguntame lo que necesites:</p>
+      <div class="welcome-examples">
+        <button class="example-btn" onclick="sendExample(this)">Como se calcula el pandeo lateral torsional segun CIRSOC 301?</button>
+        <button class="example-btn" onclick="sendExample(this)">Que perfil HEB me conviene para un Mu de 150 kN*m?</button>
+        <button class="example-btn" onclick="sendExample(this)">Cuanto cuesta un perfil HEB 200?</button>
+        <button class="example-btn" onclick="sendExample(this)">Que dice la norma AWS D1.1 sobre soldadura de filete?</button>
+        <button class="example-btn" onclick="sendExample(this)">Busca perfiles IPE con Wx mayor a 500 cm3</button>
+        <button class="example-btn" onclick="sendExample(this)">Explicame el diseno de placas base segun AISC</button>
       </div>
-      <div id="results-perfiles"></div>
-    </section>
-
-    <!-- ========== TAB: SUGERIR ========== -->
-    <section class="panel" id="panel-sugerir">
-      <div class="form-section">
-        <div class="form-title">Sugerir perfil optimo</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="sg-momento">Momento Mu (kN*m) *</label>
-            <input type="number" id="sg-momento" placeholder="ej: 150" required>
-          </div>
-          <div class="form-group">
-            <label for="sg-preferencia">Preferencia</label>
-            <select id="sg-preferencia">
-              <option value="economico">Economico</option>
-              <option value="liviano">Liviano</option>
-              <option value="rigido">Rigido</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="sg-cortante">Cortante Vu (kN)</label>
-            <input type="number" id="sg-cortante" placeholder="opcional">
-          </div>
-          <div class="form-group">
-            <label for="sg-luz">Luz viga (m)</label>
-            <input type="number" id="sg-luz" placeholder="opcional" step="0.1">
-          </div>
-          <div class="form-group">
-            <label for="sg-margen">Margen</label>
-            <input type="number" id="sg-margen" placeholder="1.2" value="1.2" step="0.1">
-          </div>
-          <div class="form-group">
-            <label for="sg-max">Max resultados</label>
-            <input type="number" id="sg-max" placeholder="5" value="5">
-          </div>
-        </div>
-        <button class="btn-search" onclick="sugerirPerfiles()">Sugerir perfiles</button>
-      </div>
-      <div id="results-sugerir"></div>
-    </section>
-
-    <!-- ========== TAB: COSTOS ========== -->
-    <section class="panel" id="panel-costos">
-      <div class="form-section">
-        <div class="form-title">Consultar precios de materiales</div>
-        <div class="form-grid">
-          <div class="form-group full-width">
-            <label for="cs-query">Buscar</label>
-            <input type="text" id="cs-query" placeholder="ej: HEB 200, planchuela, angulo...">
-          </div>
-          <div class="form-group">
-            <label for="cs-tipo">Tipo</label>
-            <input type="text" id="cs-tipo" placeholder="ej: HEB, IPE, Angulos">
-          </div>
-          <div class="form-group">
-            <label for="cs-rubro">Rubro</label>
-            <input type="text" id="cs-rubro" placeholder="opcional">
-          </div>
-          <div class="form-group">
-            <label for="cs-limite">Max resultados</label>
-            <input type="number" id="cs-limite" placeholder="10" value="10">
-          </div>
-        </div>
-        <button class="btn-search" onclick="buscarCostos()">Buscar precios</button>
-      </div>
-      <div id="results-costos"></div>
-    </section>
-
-    <!-- ========== TAB: DOCUMENTOS ========== -->
-    <section class="panel" id="panel-documentos">
-      <div class="form-section">
-        <div class="form-title">Buscar en bibliografia tecnica</div>
-        <div class="form-grid">
-          <div class="form-group full-width">
-            <label for="dc-consulta">Consulta *</label>
-            <input type="text" id="dc-consulta" placeholder="ej: pandeo lateral torsional, diseno de conexiones...">
-          </div>
-          <div class="form-group">
-            <label for="dc-coleccion">Coleccion</label>
-            <select id="dc-coleccion">
-              <option value="todos">Todas</option>
-              <option value="norma">Normas</option>
-              <option value="libro">Libros</option>
-              <option value="memoria">Memorias</option>
-              <option value="software">Software</option>
-              <option value="material">Material</option>
-              <option value="pliego">Pliego</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="dc-tipoFuente">Tipo fuente</label>
-            <select id="dc-tipoFuente">
-              <option value="todos">Todas</option>
-              <option value="pdf">PDF</option>
-              <option value="manual">Manual</option>
-              <option value="norma">Norma</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="dc-tema">Tema</label>
-            <input type="text" id="dc-tema" placeholder="ej: soldadura, conexiones">
-          </div>
-          <div class="form-group">
-            <label for="dc-limite">Max resultados</label>
-            <input type="number" id="dc-limite" placeholder="5" value="5">
-          </div>
-        </div>
-        <button class="btn-search" onclick="buscarDocumentos()">Buscar documentos</button>
-      </div>
-      <div id="results-documentos"></div>
-    </section>
+    </div>
   </main>
 
+  <!-- Input area -->
+  <footer class="input-area">
+    <div class="input-wrapper">
+      <textarea
+        id="messageInput"
+        placeholder="Escribi tu consulta..."
+        rows="1"
+        onkeydown="handleKeyDown(event)"
+        oninput="autoResize(this)"
+      ></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </footer>
+
   <script>
-    // ==========================================
-    // Navegacion por tabs
-    // ==========================================
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
-      });
-    });
+    const chatContainer = document.getElementById('chatContainer');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    let history = [];
+    let isLoading = false;
 
-    // ==========================================
-    // Helpers
-    // ==========================================
-    function setLoading(btn, loading) {
-      btn.disabled = loading;
-      btn.classList.toggle('loading', loading);
-    }
-
-    function val(id) {
-      const el = document.getElementById(id);
-      if (el.tagName === 'SELECT') return el.value || undefined;
-      const v = el.value.trim();
-      if (!v) return undefined;
-      if (el.type === 'number') return Number(v);
-      return v;
-    }
-
-    function qs(params) {
-      const entries = Object.entries(params).filter(([_, v]) => v !== undefined && v !== '');
-      if (entries.length === 0) return '';
-      return '?' + entries.map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
-    }
-
-    async function apiFetch(url, options) {
-      const res = await fetch(url, options);
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: res.statusText }));
-        throw new Error(err.error || 'Error del servidor');
+    function handleKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
       }
-      return res.json();
     }
 
-    function showError(containerId, message) {
-      document.getElementById(containerId).innerHTML =
-        `<div class="error-message">${message}</div>`;
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
     }
 
-    function showEmpty(containerId, message) {
-      document.getElementById(containerId).innerHTML =
-        `<div class="empty-state">
-          <div class="empty-state-icon">--</div>
-          <div class="empty-state-text">${message}</div>
+    function sendExample(btn) {
+      messageInput.value = btn.textContent;
+      sendMessage();
+    }
+
+    function clearChat() {
+      history = [];
+      chatContainer.innerHTML = `
+        <div class="welcome">
+          <div class="welcome-icon">Dona</div>
+          <h2>Hola, soy Dona</h2>
+          <p>Tu asistente de ingenieria estructural metalica. Preguntame lo que necesites.</p>
         </div>`;
     }
 
-    // ==========================================
-    // PERFILES
-    // ==========================================
-    async function buscarPerfiles() {
-      const btn = document.querySelector('#panel-perfiles .btn-search');
-      setLoading(btn, true);
+    async function sendMessage() {
+      const text = messageInput.value.trim();
+      if (!text || isLoading) return;
+
+      // Ocultar welcome
+      const welcome = chatContainer.querySelector('.welcome');
+      if (welcome) welcome.remove();
+
+      // Agregar mensaje del usuario
+      appendMessage('user', text);
+      history.push({ role: 'user', content: text });
+
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+      isLoading = true;
+      sendBtn.disabled = true;
+
+      // Mostrar indicador de carga
+      const loadingEl = appendLoading();
+
       try {
-        const params = {
-          tipo: val('pf-tipo'),
-          minWx: val('pf-minWx'),
-          minIx: val('pf-minIx'),
-          maxPeso: val('pf-maxPeso'),
-          minAltura: val('pf-minAltura'),
-          maxAltura: val('pf-maxAltura'),
-          ordenarPor: val('pf-ordenar'),
-          limite: val('pf-limite'),
-        };
-        const data = await apiFetch('/api/perfiles' + qs(params));
-        renderPerfiles(data);
-      } catch (e) {
-        showError('results-perfiles', e.message);
-      } finally {
-        setLoading(btn, false);
-      }
-    }
-
-    function renderPerfiles(data) {
-      const container = document.getElementById('results-perfiles');
-      if (!data.perfiles || data.perfiles.length === 0) {
-        showEmpty('results-perfiles', 'No se encontraron perfiles con esos criterios');
-        return;
-      }
-
-      let html = '';
-
-      if (data.criterios && data.criterios.length > 0) {
-        html += `<div class="criteria-box"><strong>Filtros:</strong> ${data.criterios.join(' | ')}</div>`;
-      }
-
-      html += `<div class="results-header">
-        <span class="results-title">Perfiles</span>
-        <span class="results-count">${data.count} de ${data.totalEncontrados}</span>
-      </div><div class="results-container">`;
-
-      for (const p of data.perfiles) {
-        html += `<div class="card">
-          <div class="card-header">
-            <span class="card-title">${p.nombre}</span>
-            <span class="card-badge badge-tipo">${p.tipo}</span>
-          </div>
-          <div class="card-props">
-            <div class="card-prop"><span class="card-prop-label">h</span><span class="card-prop-value">${p.h} mm</span></div>
-            <div class="card-prop"><span class="card-prop-label">b</span><span class="card-prop-value">${p.b} mm</span></div>
-            <div class="card-prop"><span class="card-prop-label">Peso</span><span class="card-prop-value">${p.peso} kg/m</span></div>
-            <div class="card-prop"><span class="card-prop-label">Wx</span><span class="card-prop-value">${p.Wx} cm3</span></div>
-            <div class="card-prop"><span class="card-prop-label">Ix</span><span class="card-prop-value">${p.Ix} cm4</span></div>
-            <div class="card-prop"><span class="card-prop-label">Wy</span><span class="card-prop-value">${p.Wy} cm3</span></div>
-            <div class="card-prop"><span class="card-prop-label">Iy</span><span class="card-prop-value">${p.Iy} cm4</span></div>
-            <div class="card-prop"><span class="card-prop-label">A</span><span class="card-prop-value">${p.A} cm2</span></div>
-          </div>
-        </div>`;
-      }
-
-      html += '</div>';
-      container.innerHTML = html;
-    }
-
-    // ==========================================
-    // SUGERIR
-    // ==========================================
-    async function sugerirPerfiles() {
-      const momento = val('sg-momento');
-      if (!momento) {
-        showError('results-sugerir', 'Ingresa el momento requerido (Mu)');
-        return;
-      }
-      const btn = document.querySelector('#panel-sugerir .btn-search');
-      setLoading(btn, true);
-      try {
-        const body = {
-          momentoRequerido: momento,
-          preferencia: val('sg-preferencia'),
-          cortanteRequerido: val('sg-cortante'),
-          luzViga: val('sg-luz'),
-          margen: val('sg-margen'),
-          maxResultados: val('sg-max'),
-        };
-        const data = await apiFetch('/api/sugerir', {
+        const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          body: JSON.stringify({ message: text, history: history.slice(0, -1) }),
         });
-        renderSugerencias(data);
-      } catch (e) {
-        showError('results-sugerir', e.message);
+
+        const data = await res.json();
+
+        loadingEl.remove();
+
+        if (data.error) {
+          appendMessage('assistant', 'Error: ' + data.error);
+        } else {
+          appendMessage('assistant', data.response);
+          history.push({ role: 'assistant', content: data.response });
+        }
+      } catch (err) {
+        loadingEl.remove();
+        appendMessage('assistant', 'Error de conexion. Verifica que el servidor este corriendo.');
       } finally {
-        setLoading(btn, false);
+        isLoading = false;
+        sendBtn.disabled = false;
+        messageInput.focus();
       }
     }
 
-    function renderSugerencias(data) {
-      const container = document.getElementById('results-sugerir');
-      if (!data.sugerencias || data.sugerencias.length === 0) {
-        showEmpty('results-sugerir', data.mensaje || 'No se encontraron perfiles que cumplan');
-        return;
-      }
-
-      let html = '';
-
-      if (data.criterios) {
-        html += `<div class="criteria-box">
-          <strong>Mu:</strong> ${data.criterios.momentoRequerido} |
-          <strong>Wx min:</strong> ${data.criterios.WxMinRequerido} |
-          <strong>Con margen:</strong> ${data.criterios.WxMinConMargen} |
-          <strong>Pref:</strong> ${data.criterios.preferencia}
-        </div>`;
-      }
-
-      html += `<div class="results-header">
-        <span class="results-title">Sugerencias</span>
-        <span class="results-count">${data.sugerencias.length} perfiles</span>
-      </div><div class="results-container">`;
-
-      for (const s of data.sugerencias) {
-        const p = s.perfil;
-        html += `<div class="card">
-          <div class="card-header">
-            <span class="card-title">${p.nombre}</span>
-            <span class="card-badge badge-tipo">${p.tipo}</span>
-          </div>
-          <div class="card-props">
-            <div class="card-prop"><span class="card-prop-label">h</span><span class="card-prop-value">${p.h} mm</span></div>
-            <div class="card-prop"><span class="card-prop-label">b</span><span class="card-prop-value">${p.b} mm</span></div>
-            <div class="card-prop"><span class="card-prop-label">Peso</span><span class="card-prop-value">${p.peso} kg/m</span></div>
-            <div class="card-prop"><span class="card-prop-label">Wx</span><span class="card-prop-value">${p.Wx} cm3</span></div>
-            <div class="card-prop"><span class="card-prop-label">Ix</span><span class="card-prop-value">${p.Ix} cm4</span></div>
-            <div class="card-prop"><span class="card-prop-label">Sobrecap.</span><span class="card-prop-value">${s.verificaciones.sobrecapacidad}</span></div>
-          </div>
-          <div class="card-reason">${s.razon}</div>
-          <div class="card-cost">${s.costoEstimado}</div>
-        </div>`;
-      }
-
-      html += '</div>';
-      container.innerHTML = html;
-    }
-
-    // ==========================================
-    // COSTOS
-    // ==========================================
-    async function buscarCostos() {
-      const btn = document.querySelector('#panel-costos .btn-search');
-      setLoading(btn, true);
-      try {
-        const params = {
-          query: val('cs-query'),
-          tipo: val('cs-tipo'),
-          rubro: val('cs-rubro'),
-          maxResultados: val('cs-limite'),
-        };
-        const data = await apiFetch('/api/costos' + qs(params));
-        renderCostos(data);
-      } catch (e) {
-        showError('results-costos', e.message);
-      } finally {
-        setLoading(btn, false);
-      }
-    }
-
-    function renderCostos(data) {
-      const container = document.getElementById('results-costos');
-      if (!data.resultados || data.resultados.length === 0) {
-        showEmpty('results-costos', 'No se encontraron materiales');
-        return;
-      }
-
-      let html = '';
-
-      if (data.criterios && data.criterios.length > 0) {
-        html += `<div class="criteria-box"><strong>Filtros:</strong> ${data.criterios.join(' | ')}</div>`;
-      }
-
-      html += `<div class="results-header">
-        <span class="results-title">Materiales</span>
-        <span class="results-count">${data.count} de ${data.totalEncontrados} | ${data.advertencia}</span>
-      </div><div class="results-container">`;
-
-      for (const c of data.resultados) {
-        html += `<div class="card">
-          <div class="card-header">
-            <span class="card-title">${c.descripcion}</span>
-          </div>
-          <div class="card-props">
-            <div class="card-prop"><span class="card-prop-label">Codigo</span><span class="card-prop-value">${c.codigo}</span></div>
-            <div class="card-prop"><span class="card-prop-label">Tipo</span><span class="card-prop-value">${c.tipo}</span></div>
-            <div class="card-prop"><span class="card-prop-label">Rubro</span><span class="card-prop-value">${c.rubro}</span></div>
-            <div class="card-prop"><span class="card-prop-label">Presentacion</span><span class="card-prop-value">${c.presentacion}</span></div>
-          </div>
-          <div class="card-cost">${c.costoFormateado}</div>
-        </div>`;
-      }
-
-      html += '</div>';
-      container.innerHTML = html;
-    }
-
-    // ==========================================
-    // DOCUMENTOS
-    // ==========================================
-    async function buscarDocumentos() {
-      const consulta = val('dc-consulta');
-      if (!consulta) {
-        showError('results-documentos', 'Ingresa una consulta');
-        return;
-      }
-      const btn = document.querySelector('#panel-documentos .btn-search');
-      setLoading(btn, true);
-      try {
-        const body = {
-          consulta,
-          coleccion: val('dc-coleccion'),
-          tipoFuente: val('dc-tipoFuente'),
-          tema: val('dc-tema'),
-          limite: val('dc-limite'),
-        };
-        const data = await apiFetch('/api/documentos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        renderDocumentos(data);
-      } catch (e) {
-        showError('results-documentos', e.message);
-      } finally {
-        setLoading(btn, false);
-      }
-    }
-
-    function renderDocumentos(data) {
-      const container = document.getElementById('results-documentos');
-
-      if (data.error) {
-        showError('results-documentos', data.error + (data.solucion ? ' - ' + data.solucion : ''));
-        return;
-      }
-
-      if (!data.fragmentos || data.fragmentos.length === 0) {
-        showEmpty('results-documentos', data.nota || 'No se encontraron documentos relevantes');
-        return;
-      }
-
-      let html = `<div class="results-header">
-        <span class="results-title">Fragmentos</span>
-        <span class="results-count">${data.resultados} resultados | Metodo: ${data.metodo}</span>
-      </div><div class="results-container">`;
-
-      for (const f of data.fragmentos) {
-        const badgeClass = f.confianza === 'alta' ? 'badge-alta' : f.confianza === 'media' ? 'badge-media' : 'badge-baja';
-        html += `<div class="card">
-          <div class="card-header">
-            <span class="card-title">#${f.numero} ${f.titulo}</span>
-            <span class="card-badge ${badgeClass}">${f.confianza}</span>
-          </div>
-          <div class="card-content">${escapeHtml(f.contenido)}</div>
-          <div class="card-source">Fuente: ${f.fuente} | Tipo: ${f.tipo} | Relevancia: ${f.relevancia}</div>
-        </div>`;
-      }
-
-      html += '</div>';
-      container.innerHTML = html;
-    }
-
-    function escapeHtml(text) {
+    function appendMessage(role, content) {
       const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
+      div.className = 'message message-' + role;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble bubble-' + role;
+
+      if (role === 'assistant') {
+        bubble.innerHTML = formatMarkdown(content);
+      } else {
+        bubble.textContent = content;
+      }
+
+      div.appendChild(bubble);
+      chatContainer.appendChild(div);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    // ==========================================
-    // Service Worker registration
-    // ==========================================
+    function appendLoading() {
+      const div = document.createElement('div');
+      div.className = 'message message-assistant';
+      div.innerHTML = '<div class="bubble bubble-assistant loading-bubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
+      chatContainer.appendChild(div);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      return div;
+    }
+
+    function formatMarkdown(text) {
+      // Escape HTML first
+      let html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      // Bold: **text**
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+      // Inline code: `code`
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // Code blocks: ```code```
+      html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+
+      // Headers
+      html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
+      html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+
+      // Lists
+      html = html.replace(/^\- (.+)$/gm, '<li>$1</li>');
+      html = html.replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>');
+
+      // Wrap consecutive <li> in <ul>
+      html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+
+      // Line breaks
+      html = html.replace(/\n\n/g, '</p><p>');
+      html = html.replace(/\n/g, '<br>');
+
+      return '<p>' + html + '</p>';
+    }
+
+    // Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
+
+    // Focus input on load
+    messageInput.focus();
   </script>
 </body>
 </html>
