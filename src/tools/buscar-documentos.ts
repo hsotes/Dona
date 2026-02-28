@@ -5,10 +5,13 @@
  * Soporta: semántica, keyword (BM25), e híbrida (RRF).
  */
 
-import { getStoreStats, type SearchResult } from '../vectordb/index.js';
+import { getStoreStats, searchDocumentsWithTimings, type SearchResult } from '../vectordb/index.js';
 import { hybridSearch, type SearchMethod } from '../vectordb/hybrid-search.js';
 import { multiStepSearch } from '../vectordb/multistep-search.js';
 import { logQuery, createQueryId } from '../utils/logger.js';
+
+// En Railway/containers: usar solo búsqueda semántica (sin BM25) para ahorrar ~300MB de RAM
+const LOW_MEMORY = process.env.LOW_MEMORY === '1' || process.env.RAILWAY_ENVIRONMENT !== undefined;
 
 export const buscarDocumentosSchema = {
   name: 'buscar_documentos',
@@ -73,40 +76,58 @@ export async function buscarDocumentosTool(args: BuscarDocumentosArgs) {
 
     const queryId = createQueryId();
 
-    // Si el usuario no filtró por colección, usar multi-step (detección automática + diversidad)
-    // Si filtró explícitamente, usar hybrid directo (ya está focalizado)
-    const useMultiStep = coleccion === 'todos';
-
     let results: SearchResult[];
     let timings: { embeddingMs: number; bm25Ms: number; searchMs: number; fusionMs?: number; rewriteMs: number; rerankMs: number; totalMs: number };
     let method: string;
     let rewrittenQuery: string | undefined;
 
-    if (useMultiStep) {
-      const ms = await multiStepSearch({
-        query: consulta,
-        limit: limite,
-        filter: filterOrUndefined,
-        rewrite: true,
-        rerank: false,
-      });
-      results = ms.results;
-      timings = ms.timings;
-      method = ms.detectedCollection ? `multistep(${ms.detectedCollection})` : 'multistep';
-      rewrittenQuery = ms.rewrittenQuery;
+    if (LOW_MEMORY) {
+      // Low-memory mode: solo búsqueda semántica (sin BM25, sin hybrid, sin rewrite)
+      // Ahorra ~300MB de RAM del índice BM25
+      const sr = await searchDocumentsWithTimings(consulta, limite, filterOrUndefined);
+      results = sr.results;
+      timings = {
+        embeddingMs: sr.timings.embeddingMs,
+        bm25Ms: 0,
+        searchMs: sr.timings.searchMs,
+        rewriteMs: 0,
+        rerankMs: 0,
+        totalMs: sr.timings.totalMs,
+      };
+      method = 'semantic';
+      rewrittenQuery = undefined;
     } else {
-      const hs = await hybridSearch({
-        query: consulta,
-        limit: limite,
-        filter: filterOrUndefined,
-        method: 'hybrid',
-        rewrite: true,
-        rerank: false,
-      });
-      results = hs.results;
-      timings = hs.timings;
-      method = hs.method;
-      rewrittenQuery = hs.rewrittenQuery;
+      // Full mode: multi-step o hybrid según filtros
+      // Si el usuario no filtró por colección, usar multi-step (detección automática + diversidad)
+      // Si filtró explícitamente, usar hybrid directo (ya está focalizado)
+      const useMultiStep = coleccion === 'todos';
+
+      if (useMultiStep) {
+        const ms = await multiStepSearch({
+          query: consulta,
+          limit: limite,
+          filter: filterOrUndefined,
+          rewrite: true,
+          rerank: false,
+        });
+        results = ms.results;
+        timings = ms.timings;
+        method = ms.detectedCollection ? `multistep(${ms.detectedCollection})` : 'multistep';
+        rewrittenQuery = ms.rewrittenQuery;
+      } else {
+        const hs = await hybridSearch({
+          query: consulta,
+          limit: limite,
+          filter: filterOrUndefined,
+          method: 'hybrid',
+          rewrite: true,
+          rerank: false,
+        });
+        results = hs.results;
+        timings = hs.timings;
+        method = hs.method;
+        rewrittenQuery = hs.rewrittenQuery;
+      }
     }
 
     // Formatear resultados para el LLM con nivel de confianza

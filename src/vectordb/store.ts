@@ -53,6 +53,9 @@ interface Manifest {
   sources: { name: string; chunks: number; indexedAt: string }[];
 }
 
+// Modo low-memory: no cachear vectores (para Railway/containers con poca RAM)
+const LOW_MEMORY = process.env.LOW_MEMORY === '1' || process.env.RAILWAY_ENVIRONMENT !== undefined;
+
 // Cache en memoria
 let manifest: Manifest | null = null;
 let lastManifestLoad: number = 0;
@@ -223,7 +226,10 @@ function loadDocumentVectors(source: string): IndexedDocument[] {
 
   if (fs.existsSync(filepath)) {
     const shard: DocumentShard = JSON.parse(fs.readFileSync(filepath, 'utf-8'));
-    vectorCache.set(source, shard.documents);
+    // En low-memory, no cachear vectores (se liberan al salir del scope)
+    if (!LOW_MEMORY) {
+      vectorCache.set(source, shard.documents);
+    }
     return shard.documents;
   }
 
@@ -419,7 +425,10 @@ export function searchWithEmbedding(
   }
 
   const searchStart = performance.now();
-  const allScores: { doc: IndexedDocument; similarity: number }[] = [];
+
+  // En low-memory: guardar solo metadata + score (sin referencia al embedding)
+  // para que el GC pueda liberar cada shard después de procesarlo
+  const topScores: { id: string; metadata: IndexedDocument['metadata']; similarity: number }[] = [];
 
   for (const sourceInfo of m.sources) {
     const documents = loadDocumentVectors(sourceInfo.name);
@@ -436,20 +445,27 @@ export function searchWithEmbedding(
         if (!matches) continue;
       }
 
-      allScores.push({
-        doc,
-        similarity: cosineSimilarity(queryEmbedding, doc.embedding),
-      });
+      const similarity = cosineSimilarity(queryEmbedding, doc.embedding);
+
+      // Mantener solo top-K resultados para no acumular todo en memoria
+      if (topScores.length < limit * 3) {
+        topScores.push({ id: doc.id, metadata: doc.metadata, similarity });
+      } else if (similarity > topScores[topScores.length - 1].similarity) {
+        topScores.push({ id: doc.id, metadata: doc.metadata, similarity });
+        topScores.sort((a, b) => b.similarity - a.similarity);
+        topScores.length = limit * 3; // Trim para no crecer infinitamente
+      }
     }
+    // Shard sale de scope, GC puede liberarlo en low-memory mode
   }
 
-  allScores.sort((a, b) => b.similarity - a.similarity);
+  topScores.sort((a, b) => b.similarity - a.similarity);
   const searchMs = Math.round(performance.now() - searchStart);
 
-  const results: SearchResult[] = allScores.slice(0, limit).map(item => ({
-    id: item.doc.id,
-    content: getChunkContent(item.doc.metadata.source, item.doc.metadata.chunkIndex),
-    metadata: item.doc.metadata,
+  const results: SearchResult[] = topScores.slice(0, limit).map(item => ({
+    id: item.id,
+    content: getChunkContent(item.metadata.source, item.metadata.chunkIndex),
+    metadata: item.metadata,
     distance: 1 - item.similarity,
   }));
 
