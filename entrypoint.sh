@@ -13,7 +13,7 @@ if [ -d "$VOLUME_DIR" ]; then
     if [ -d "$STAGING_DIR/$subdir" ]; then
       mkdir -p "$VOLUME_DIR/$subdir"
       echo "[entrypoint] Copiando $subdir/ al volume..."
-      cp -n "$STAGING_DIR/$subdir/"* "$VOLUME_DIR/$subdir/" 2>/dev/null || true
+      cp -u "$STAGING_DIR/$subdir/"* "$VOLUME_DIR/$subdir/" 2>/dev/null || true
       count=$(ls "$VOLUME_DIR/$subdir/" 2>/dev/null | wc -l)
       echo "[entrypoint] $subdir/: $count archivos en volume"
     fi
@@ -21,9 +21,9 @@ if [ -d "$VOLUME_DIR" ]; then
 
   # Copiar archivos sueltos (manifest.json, bm25-index.json)
   for file in manifest.json bm25-index.json; do
-    if [ -f "$STAGING_DIR/$file" ] && [ ! -f "$VOLUME_DIR/$file" ]; then
+    if [ -f "$STAGING_DIR/$file" ]; then
       echo "[entrypoint] Copiando $file al volume..."
-      cp "$STAGING_DIR/$file" "$VOLUME_DIR/$file"
+      cp -u "$STAGING_DIR/$file" "$VOLUME_DIR/$file"
     fi
   done
 
