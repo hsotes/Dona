@@ -12,7 +12,9 @@ if [ -d "$VOLUME_DIR" ]; then
   staging_count=$(ls "$STAGING_DIR/vectors/"*.vec.json 2>/dev/null | wc -l)
   volume_count=$(ls "$VOLUME_DIR/vectors/"*.vec.json 2>/dev/null | wc -l)
 
-  if [ "$staging_count" != "$volume_count" ] || [ ! -f "$VOLUME_DIR/bm25-index.json" ]; then
+  # FORCE_RESYNC=1 para limpiar volume de archivos corruptos (quitar después)
+  FORCE_RESYNC=1
+  if [ "$FORCE_RESYNC" = "1" ] || [ "$staging_count" != "$volume_count" ] || [ ! -f "$VOLUME_DIR/bm25-index.json" ]; then
     echo "[entrypoint] Re-sincronizando volume ($volume_count -> $staging_count vectors)..."
     # Limpiar y copiar todo fresco
     rm -rf "$VOLUME_DIR/vectors" "$VOLUME_DIR/chunks"
